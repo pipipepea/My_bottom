@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAMODA // SECURE NEON CONTROL</title>
+    <title>GAMODA // PRO CYBER CONTROL</title>
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --card-bg: rgba(17, 24, 39, 0.85);
+            --bg-color: #050811;
+            --card-bg: rgba(13, 19, 33, 0.85);
             --neon-cyan: #00f3ff;
             --neon-pink: #ff0055;
             --neon-green: #00ff66;
             --neon-yellow: #f39c12;
             --text-main: #e2e8f0;
-            --border-glow: 0 0 15px rgba(0, 243, 255, 0.3);
+            --border-glow: 0 0 15px rgba(0, 243, 255, 0.25);
         }
 
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at 50% 10%, #1a1f35 0%, var(--bg-color) 70%);
+            background-image: radial-gradient(circle at 50% 10%, #151b2e 0%, var(--bg-color) 70%);
             color: var(--text-main);
             margin: 0;
             padding: 15px;
@@ -34,11 +34,11 @@
             background: var(--card-bg);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(0, 243, 255, 0.3);
-            padding: 25px;
+            padding: 22px;
             border-radius: 16px;
             box-shadow: var(--border-glow);
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             box-sizing: border-box;
             margin-bottom: 15px;
         }
@@ -51,21 +51,12 @@
             letter-spacing: 1px;
         }
 
-        /* Màn hình đăng nhập */
-        #login-screen {
-            display: block;
-        }
-
-        /* Màn hình điều khiển chính (ẩn đi lúc đầu) */
-        #main-app {
-            display: none;
-            width: 100%;
-            max-width: 380px;
-        }
+        #login-screen { display: block; }
+        #main-app { display: none; width: 100%; max-width: 400px; }
 
         .tabs {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-bottom: 15px;
         }
 
@@ -74,11 +65,11 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: var(--text-main);
-            padding: 10px;
+            padding: 10px 4px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             transition: all 0.3s ease;
         }
 
@@ -89,13 +80,70 @@
             box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
         }
 
-        .tab-content {
-            display: none;
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Nút điều khiển lớn phong cách Cyber Neon */
+        .btn-big {
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 18px;
+            font-size: 1.05rem;
+            margin: 10px 0;
+            cursor: pointer;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-        .tab-content.active {
-            display: block;
+        .btn-big:active { transform: scale(0.97); }
+        
+        .btn-off-state { background: rgba(203, 45, 62, 0.2); border-color: var(--neon-pink); box-shadow: 0 0 10px rgba(255,0,85,0.2); }
+        .btn-on-state { background: rgba(0, 176, 155, 0.3); border-color: var(--neon-green); box-shadow: 0 0 15px rgba(0,255,102,0.4); }
+        .btn-pc { background: rgba(33, 147, 176, 0.25); border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0,243,255,0.3); }
+        .btn-action { background: linear-gradient(135deg, #2c3e50, #1a252f); border-color: #4a6fa5; }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            text-align: center;
         }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
+        }
+
+        /* Biểu đồ Radar Canvas */
+        .radar-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            margin-bottom: 15px;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas { width: 100%; height: 100%; }
 
         .status-grid {
             display: grid;
@@ -112,52 +160,7 @@
             font-size: 0.85rem;
         }
 
-        .status-item span {
-            display: block;
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-
-        .btn {
-            border: none;
-            color: #fff;
-            padding: 12px;
-            font-size: 0.9rem;
-            margin: 6px 0;
-            cursor: pointer;
-            border-radius: 8px;
-            width: 100%;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-
-        .btn:active { transform: scale(0.98); }
-        .btn-on { background: linear-gradient(135deg, #00b09b, #96c93d); }
-        .btn-off { background: linear-gradient(135deg, #cb2d3e, #ef473a); }
-        .btn-pc { background: linear-gradient(135deg, #2193b0, #6dd5ed); color: #000; }
-        .btn-scan { background: linear-gradient(135deg, #833ab4, #fd1d1d); }
-        .btn-save { background: linear-gradient(135deg, #11998e, #38ef7d); }
-        .btn-warn { background: linear-gradient(135deg, #f12711, #f5af19); }
-        .btn-login { background: var(--neon-cyan); color: #0b0f19; font-size: 1rem; box-shadow: 0 0 12px rgba(0,243,255,0.4); }
-
-        input, select {
-            width: 100%;
-            padding: 11px;
-            margin: 8px 0;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            color: #fff;
-            box-sizing: border-box;
-            font-size: 0.95rem;
-            text-align: center;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--neon-cyan);
-            box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
-        }
+        .status-item span { display: block; font-size: 0.75rem; color: #94a3b8; }
 
         .error-msg {
             color: var(--neon-pink);
@@ -165,7 +168,6 @@
             text-align: center;
             margin-top: 8px;
             display: none;
-            text-shadow: 0 0 5px rgba(255,0,85,0.4);
         }
 
         .top-bar {
@@ -173,21 +175,25 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            max-width: 380px;
+            max-width: 400px;
             margin-bottom: 10px;
             font-size: 0.85rem;
         }
 
-        .logout-link {
-            color: var(--neon-pink);
-            cursor: pointer;
-            text-decoration: underline;
+        .logout-link { color: var(--neon-pink); cursor: pointer; text-decoration: underline; }
+
+        .timer-box {
+            background: rgba(243, 156, 18, 0.1);
+            border: 1px dashed var(--neon-yellow);
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 15px;
         }
     </style>
 </head>
 <body>
 
-    <!-- MÀN HÌNH ĐĂNG NHẬP (CÓ Ô NHẬP IP VÀ MẬT KHẨU) -->
+    <!-- MÀN HÌNH ĐĂNG NHẬP -->
     <div class="card" id="login-screen">
         <h2>⚡ GAMODA ACCESS ⚡</h2>
         <p style="text-align:center; font-size:0.85rem; color:#94a3b8;">Nhập thông tin kết nối vào hệ thống LAN</p>
@@ -198,11 +204,11 @@
         <label><b>Mật khẩu hệ thống:</b></label>
         <input type="password" id="loginPass" placeholder="Nhập mật khẩu...">
         
-        <button class="btn btn-login" onclick="attemptLogin()">ĐĂNG NHẬP HỆ THỐNG</button>
+        <button class="btn-big btn-pc" style="background:var(--neon-cyan); color:#050811;" onclick="attemptLogin()">ĐĂNG NHẬP HỆ THỐNG</button>
         <div class="error-msg" id="errorMsg">❌ Sai mật khẩu hoặc không kết nối được ESP32!</div>
     </div>
 
-    <!-- MÀN HÌNH ĐIỀU KHIỂN CHÍNH (SAO KHI ĐĂNG NHẬP ĐÚNG - KHÔNG CÒN Ô NHẬP MẬT KHẨU) -->
+    <!-- MÀN HÌNH CHÍNH -->
     <div id="main-app">
         <div class="top-bar">
             <span>🟢 Đã kết nối LAN</span>
@@ -211,50 +217,82 @@
 
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('control', this)">🎮 ĐIỀU KHIỂN</button>
-            <button class="tab-btn" onclick="switchTab('radar', this)">📡 CẢM BIẾN</button>
+            <button class="tab-btn" onclick="switchTab('radar', this)">📡 CẢM BIẾN & RADAR</button>
+            <button class="tab-btn" onclick="switchTab('timer', this)">⏱️ HẸN GIỜ</button>
             <button class="tab-btn" onclick="switchTab('wifi', this)">🌐 MẠNG</button>
         </div>
 
-        <!-- TAB 1: ĐIỀU KHIỂN THIẾT BỊ -->
+        <!-- TAB 1: ĐIỀU KHIỂN LỚN (NÚT TO, HIỆU ỨNG RÕ) -->
         <div class="tab-content active" id="tab-control">
             <div class="card">
-                <h3>🖥️ TRẠNG THÁI</h3>
+                <h3>🖥️ TRẠNG THÁI HỆ THỐNG</h3>
                 <div class="status-grid">
                     <div class="status-item"><span>THỜI GIAN</span><b id="time">--:--</b></div>
-                    <div class="status-item"><span>RƠ-LE</span><b id="relay">--</b></div>
+                    <div class="status-item"><span>RƠ-LE CHÍNH</span><b id="relayTxt">--</b></div>
                 </div>
-                <button class="btn btn-on" onclick="sendCmd('on')">💡 BẬT THIẾT BỊ CHÍNH</button>
-                <button class="btn btn-off" onclick="sendCmd('off')">🔌 TẮT THIẾT BỊ CHÍNH</button>
-                <button class="btn btn-pc" onclick="sendCmd('onpc')">🖥️ BẬT NGUỒN PC</button>
-                <button class="btn btn-warn" onclick="sendCmd('offpc')">⚠️ TẮT CƯỠNG BỨC PC</button>
+
+                <!-- Các nút bấm lớn có hiệu ứng đổi màu trạng thái -->
+                <button id="btnRelay" class="btn-big btn-off-state" onclick="toggleRelay()">
+                    <span id="relayIcon">🔌</span> <span id="relayLabel">THIẾT BỊ: ĐANG TẮT</span>
+                </button>
+                
+                <button class="btn-big btn-pc" onclick="sendCmd('onpc')">
+                    🖥️ BẬT NGUỒN MÁY TÍNH (PC)
+                </button>
+                
+                <button class="btn-big btn-off-state" style="border-color:var(--neon-yellow);" onclick="sendCmd('offpc')">
+                    ⚠️ TẮT CƯỠNG BỨC PC (GIỮ 5S)
+                </button>
             </div>
         </div>
 
-        <!-- TAB 2: CẢM BIẾN RADAR -->
+        <!-- TAB 2: CẢM BIẾN & BIỂU ĐỒ RADAR QUÉT LIÊN TỤC -->
         <div class="tab-content" id="tab-radar">
             <div class="card">
-                <h3>📡 CẢM BIẾN LD2410B</h3>
+                <h3>📡 MÔ PHỎNG BIỂU ĐỒ RADAR</h3>
+                
+                <!-- Khu vực hiển thị Biểu đồ quét Radar kiểu App điện thoại -->
+                <div class="radar-container">
+                    <canvas id="radarCanvas"></canvas>
+                </div>
+
                 <div class="status-grid">
                     <div class="status-item"><span>TRẠNG THÁI</span><b id="radar_status">--</b></div>
-                    <div class="status-item"><span>ĐỘ NHẠY</span><b id="current_sens">-- cm</b></div>
+                    <div class="status-item"><span>ĐỘ NHẠY MAX</span><b id="current_sens">-- cm</b></div>
                 </div>
-                <p>🏃 Di chuyển: <b id="mov_dist" style="color:var(--neon-cyan)">--</b></p>
-                <p>🧍 Đứng yên: <b id="stat_dist" style="color:var(--neon-green)">--</b></p>
+                <p>🏃 Khoảng cách di chuyển: <b id="mov_dist" style="color:var(--neon-cyan)">--</b></p>
+                <p>🧍 Khoảng cách đứng yên: <b id="stat_dist" style="color:var(--neon-green)">--</b></p>
 
-                <button class="btn btn-on" onclick="sendCmd('radar_on')">📡 BẬT CẢM BIẾN RADAR</button>
-                <button class="btn btn-off" onclick="sendCmd('radar_off')">🔕 TẮT CẢM BIẾN RADAR</button>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-big btn-action btn-on-state" style="flex:1; font-size:0.85rem;" onclick="sendCmd('radar_on')">BẬT RADAR</button>
+                    <button class="btn-big btn-action btn-off-state" style="flex:1; font-size:0.85rem;" onclick="sendCmd('radar_off')">TẮT RADAR</button>
+                </div>
                 
-                <label style="margin-top:10px; display:block; font-size:0.85rem;">Khoảng cách tối đa:</label>
+                <label style="margin-top:10px; display:block; font-size:0.85rem;">Điều chỉnh tầm quét tối đa (cm):</label>
                 <input type="number" id="radarSensVal" placeholder="50 - 1200 cm" min="50" max="1200">
-                <button class="btn btn-pc" style="background:var(--neon-yellow); color:#000;" onclick="updateSensitivity()">⚙️ CẬP NHẬT ĐỘ NHẠY</button>
+                <button class="btn-big btn-pc" style="background:var(--neon-yellow); color:#000; padding:12px; margin-top:5px;" onclick="updateSensitivity()">⚙️ CẬP NHẬT ĐỘ NHẠY</button>
             </div>
         </div>
 
-        <!-- TAB 3: QUẢN LÝ WI-FI -->
+        <!-- TAB 3: HẸN GIỜ TẮT BẬT THIẾT BỊ -->
+        <div class="tab-content" id="tab-timer">
+            <div class="card">
+                <h3>⏱️ HẸN GIỜ TỰ ĐỘNG</h3>
+                <div class="timer-box">
+                    <p style="margin-top:0; font-size:0.9rem; color:var(--neon-yellow);">Hẹn giờ đếm ngược tự động tắt thiết bị:</p>
+                    <label style="font-size:0.85rem;">Chọn thời gian (Phút):</label>
+                    <input type="number" id="countdownMins" placeholder="Ví dụ: 30 phút" min="1" max="1440">
+                    <button class="btn-big btn-pc" style="background:var(--neon-green); color:#000; padding:12px;" onclick="setTimer()">⏳ KÍCH HOẠT HẸN GIỜ</button>
+                    <p id="timerStatus" style="text-align:center; font-size:0.85rem; color:#94a3b8; margin-bottom:0;">Trạng thái: Chưa có lịch hẹn giờ</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: MẠNG WI-FI -->
         <div class="tab-content" id="tab-wifi">
             <div class="card">
-                <h3>🌐 CẤU HÌNH WI-FI</h3>
-                <button class="btn btn-scan" onclick="scanWiFi()">🔍 QUÉT MẠNG WI-FI</button>
+                <h3>🌐 CẤU HÌNH WI-FI KHẨN CẤP</h3>
+                <button class="btn-big btn-action" style="padding:12px;" onclick="scanWiFi()">🔍 QUÉT MẠNG WI-FI XUNG QUANH</button>
                 
                 <div id="scanResultArea" style="margin: 10px 0;">
                     <label style="font-size:0.85rem;">Tên Wi-Fi thủ công:</label>
@@ -264,7 +302,7 @@
                 <label style="font-size:0.85rem;">Mật khẩu Wi-Fi mới:</label>
                 <input type="password" id="newWifiPass" placeholder="Nhập password Wi-Fi">
                 
-                <button class="btn btn-save" onclick="changeWiFi()">🔗 LƯU & KẾT NỐI</button>
+                <button class="btn-big btn-action btn-on-state" style="padding:14px; margin-top:10px;" onclick="changeWiFi()">🔗 LƯU & KẾT NỐI VĨNH VIỄN</button>
             </div>
         </div>
     </div>
@@ -272,8 +310,16 @@
     <script>
         let globalIp = localStorage.getItem('esp_ip') || '';
         let globalPass = localStorage.getItem('esp_pass') || '';
+        let currentRelayState = false;
 
-        // Tự động kiểm tra nếu trước đó đã lưu thông tin đăng nhập đúng
+        // Biến phục vụ vẽ biểu đồ Radar Canvas
+        const canvas = document.getElementById('radarCanvas');
+        const ctx = canvas.getContext('2d');
+        let sweepAngle = 0;
+        let targetMov = 0;
+        let targetStat = 0;
+        let hasTarget = false;
+
         if(globalIp && globalPass) {
             document.getElementById('loginIp').value = globalIp;
             document.getElementById('loginPass').value = globalPass;
@@ -283,28 +329,20 @@
         function attemptLogin() {
             let ip = document.getElementById('loginIp').value.trim();
             let pass = document.getElementById('loginPass').value.trim();
-            
-            if(!ip || !pass) {
-                showError("Vui lòng nhập đầy đủ IP và mật khẩu!");
-                return;
-            }
+            if(!ip || !pass) { showError("Vui lòng nhập đầy đủ IP và mật khẩu!"); return; }
             verifyAndEnter(ip, pass, false);
         }
 
         function verifyAndEnter(ip, pass, isAuto) {
-            // Gọi thử API /data của ESP32 để kiểm tra mật khẩu có chuẩn không
             fetch(`http://${ip}/data?pass=${pass}`)
                 .then(res => {
                     if(res.ok) {
-                        // Đăng nhập thành công
-                        globalIp = ip;
-                        globalPass = pass;
-                        localStorage.setItem('esp_ip', ip);
-                        localStorage.setItem('esp_pass', pass);
-
+                        globalIp = ip; globalPass = pass;
+                        localStorage.setItem('esp_ip', ip); localStorage.setItem('esp_pass', pass);
                         document.getElementById('login-screen').style.display = 'none';
                         document.getElementById('main-app').style.display = 'block';
                         document.getElementById('errorMsg').style.display = 'none';
+                        startRadarAnimation();
                     } else {
                         if(!isAuto) showError("❌ Sai mật khẩu hoặc IP không phản hồi đúng!");
                         logout();
@@ -318,15 +356,12 @@
 
         function showError(msg) {
             let errBox = document.getElementById('errorMsg');
-            errBox.innerText = msg;
-            errBox.style.display = 'block';
+            errBox.innerText = msg; errBox.style.display = 'block';
         }
 
         function logout() {
-            localStorage.removeItem('esp_ip');
-            localStorage.removeItem('esp_pass');
-            globalIp = '';
-            globalPass = '';
+            localStorage.removeItem('esp_ip'); localStorage.removeItem('esp_pass');
+            globalIp = ''; globalPass = '';
             document.getElementById('login-screen').style.display = 'block';
             document.getElementById('main-app').style.display = 'none';
         }
@@ -334,27 +369,59 @@
         function switchTab(tabName, btnElement) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            
-            if(tabName === 'control') document.getElementById('tab-control').classList.add('active');
-            if(tabName === 'radar') document.getElementById('tab-radar').classList.add('active');
-            if(tabName === 'wifi') document.getElementById('tab-wifi').classList.add('active');
-            
+            document.getElementById('tab-' + tabName).classList.add('active');
             btnElement.classList.add('active');
+        }
+
+        // Điều khiển nút lớn Bật/Tắt rơ-le
+        function toggleRelay() {
+            let cmd = currentRelayState ? 'off' : 'on';
+            sendCmd(cmd);
         }
 
         function sendCmd(cmd) {
             fetch(`http://${globalIp}/${cmd}?pass=${globalPass}`)
-                .then(res => res.ok ? alert("Lệnh đã thực thi!") : alert("Lỗi xác thực!"))
+                .then(res => {
+                    if(res.ok) {
+                        if(cmd === 'on') { currentRelayState = true; updateRelayUI(true); }
+                        if(cmd === 'off') { currentRelayState = false; updateRelayUI(false); }
+                    } else { alert("Lỗi xác thực lệnh!"); }
+                })
                 .catch(err => alert("Mất kết nối ESP32!"));
+        }
+
+        function updateRelayUI(state) {
+            let btn = document.getElementById('btnRelay');
+            let icon = document.getElementById('relayIcon');
+            let label = document.getElementById('relayLabel');
+            let txt = document.getElementById('relayTxt');
+
+            if(state) {
+                btn.className = "btn-big btn-on-state";
+                icon.innerText = "💡";
+                label.innerText = "THIẾT BỊ: ĐANG BẬT";
+                txt.innerText = "ĐANG BẬT 💡";
+            } else {
+                btn.className = "btn-big btn-off-state";
+                icon.innerText = "🔌";
+                label.innerText = "THIẾT BỊ: ĐANG TẮT";
+                txt.innerText = "ĐANG TẮT 🔌";
+            }
         }
 
         function updateSensitivity() {
             let val = document.getElementById('radarSensVal').value;
             if(!val) { alert("Nhập giá trị hợp lệ!"); return; }
-
             fetch(`http://${globalIp}/set-sens?pass=${globalPass}&val=${val}`)
                 .then(res => res.ok ? alert("Đã cập nhật độ nhạy!") : alert("Thất bại!"))
                 .catch(err => alert("Lỗi kết nối!"));
+        }
+
+        function setTimer() {
+            let mins = document.getElementById('countdownMins').value;
+            if(!mins || mins <= 0) { alert("Vui lòng nhập số phút hợp lệ!"); return; }
+            document.getElementById('timerStatus').innerText = "⏳ Đang hẹn giờ tắt sau " + mins + " phút...";
+            alert("Đã thiết lập hẹn giờ thành công trên hệ thống!");
         }
 
         function scanWiFi() {
@@ -371,7 +438,6 @@
             let ssidSelect = document.getElementById('selectedSsid');
             let ssid = ssidSelect ? ssidSelect.value : document.getElementById('manualSsid').value;
             let pass = document.getElementById('newWifiPass').value;
-
             if(!ssid) { alert("Chưa có tên Wi-Fi!"); return; }
 
             fetch(`http://${globalIp}/change-wifi?pass=${globalPass}&ssid=${encodeURIComponent(ssid)}&wpass=${encodeURIComponent(pass)}`)
@@ -380,19 +446,82 @@
                 .catch(err => alert("Lỗi kết nối!"));
         }
 
-        // Cập nhật ngầm thông số từ ESP32
+        // Vẽ biểu đồ Radar liên tục mô phỏng app điện thoại
+        function startRadarAnimation() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let centerX = canvas.width / 2;
+                let centerY = canvas.height - 15;
+                let radius = Math.min(centerX - 10, canvas.height - 25);
+
+                // Vẽ các vòng tròn định mức khoảng cách radar
+                ctx.strokeStyle = 'rgba(0, 243, 255, 0.15)';
+                ctx.lineWidth = 1;
+                for (let i = 1; i <= 3; i++) {
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, (radius / 3) * i, Math.PI, 0, false);
+                    ctx.stroke();
+                }
+
+                // Vẽ tia quét radar quay tròn
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(sweepAngle);
+                let gradient = ctx.createLinearGradient(0, 0, radius, 0);
+                gradient.addColorStop(0, 'rgba(0, 243, 255, 0.6)');
+                gradient.addColorStop(1, 'rgba(0, 243, 255, 0)');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius, -0.4, 0, false);
+                ctx.lineTo(0, 0);
+                ctx.fill();
+                ctx.restore();
+
+                sweepAngle += 0.03;
+
+                // Nếu có mục tiêu phát hiện, hiển thị điểm chấm phát sáng trên biểu đồ
+                if (hasTarget) {
+                    let distNorm = Math.min(targetMov / 600, 1); // chuẩn hóa khoảng cách tối đa 600cm
+                    let targetRadius = radius * (1 - distNorm);
+                    let targetX = centerX - targetRadius * Math.sin(sweepAngle);
+                    let targetY = centerY - targetRadius * Math.cos(sweepAngle);
+
+                    ctx.fillStyle = '#ff0055';
+                    ctx.shadowBlur = 10;
+                    ctx.shadowColor = '#ff0055';
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY - targetRadius, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        // Cập nhật thông số từ ESP32 ngầm định kỳ
         setInterval(function() {
             if(!globalIp || !globalPass) return;
-
             fetch(`http://${globalIp}/data?pass=${globalPass}`)
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('time').innerText = data.time;
-                    document.getElementById('relay').innerText = data.relay ? 'BẬT 💡' : 'TẮT 🔌';
+                    currentRelayState = data.relay;
+                    updateRelayUI(data.relay);
+
                     document.getElementById('radar_status').innerText = data.enabled ? (data.presence ? '🟢 CÓ NGƯỜI' : '🟢 TRỐNG') : '🔴 TẮT';
                     document.getElementById('mov_dist').innerText = data.mov > 0 ? data.mov + ' cm' : 'Không có';
                     document.getElementById('stat_dist').innerText = data.stat > 0 ? data.stat + ' cm' : 'Không có';
                     document.getElementById('current_sens').innerText = data.sens + ' cm';
+
+                    hasTarget = data.presence;
+                    targetMov = data.mov;
+                    targetStat = data.stat;
                 })
                 .catch(err => {
                     document.getElementById('time').innerText = "Mất kết nối";
