@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAMODA CLOUD CONTROL</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #f4f6f7; padding: 15px; color: #2c3e50; }
+        .card { background: white; padding: 20px; border-radius: 12px; max-width: 380px; margin: 10px auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left; }
+        h2, h3 { text-align: center; margin-top: 0; }
+        .btn { border: none; color: white; padding: 14px; font-size: 15px; margin: 8px 0; cursor: pointer; border-radius: 8px; width: 100%; font-weight: bold; }
+        .on { background-color: #2ecc71; } .off { background-color: #e74c3c; } .pc { background-color: #3498db; }
+        input[type=text], input[type=password] { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; text-align: center; font-size: 15px; }
+        .ip-box { background: #e8f8f5; border: 1px solid #a3e4d7; padding: 10px; border-radius: 8px; margin-bottom: 15px; }
+        hr { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>GAMODA SYSTEM</h2>
+        
+        <!-- Ô cấu hình IP của ESP32 trong mạng LAN -->
+        <div class="ip-box">
+            <label><b>IP ESP32 trong LAN:</b></label>
+            <input type="text" id="espIp" placeholder="Ví dụ: 192.168.1.150" onchange="saveIp()">
+            <label><b>Mật khẩu (662):</b></label>
+            <input type="password" id="espPass" value="662" onchange="saveIp()">
+        </div>
+
+        <p>⏰ Thời gian: <b id="time">Đang kết nối...</b></p>
+        <p>Trạng thái rơ-le: <b id="relay">--</b></p>
+        <hr>
+        <h3>📡 DỮ LIỆU RADAR</h3>
+        <p>Trạng thái: <b id="radar_status">--</b></p>
+        <p>🏃 Di chuyển: <b id="mov_dist">--</b></p>
+        <p>🧍 Đứng yên: <b id="stat_dist">--</b></p>
+
+        <button class="btn on" onclick="sendCmd('on')">💡 BẬT THIẾT BỊ</button>
+        <button class="btn off" onclick="sendCmd('off')">🔌 TẮT THIẾT BỊ</button>
+        <button class="btn pc" onclick="sendCmd('onpc')">🖥️ BẬT MÁY TÍNH (PC)</button>
+        <button class="btn off" style="background:#e67e22;" onclick="sendCmd('offpc')">⚠️ TẮT CƯỠNG BỨC PC</button>
+        <button class="btn on" style="background:#27ae60;" onclick="sendCmd('radar_on')">📡 BẬT CẢM BIẾN RADAR</button>
+        <button class="btn off" style="background:#c0392b;" onclick="sendCmd('radar_off')">🔕 TẮT CẢM BIẾN RADAR</button>
+    </div>
+
+    <script>
+        // Tải IP đã lưu trước đó nếu có
+        document.getElementById('espIp').value = localStorage.getItem('esp_ip') || '';
+        document.getElementById('espPass').value = localStorage.getItem('esp_pass') || '662';
+
+        function saveIp() {
+            localStorage.setItem('esp_ip', document.getElementById('espIp').value);
+            localStorage.setItem('esp_pass', document.getElementById('espPass').value);
+        }
+
+        function getBaseUrl() {
+            let ip = document.getElementById('espIp').value.trim();
+            return "http://" + ip;
+        }
+
+        // Gửi lệnh điều khiển tới ESP32
+        function sendCmd(cmd) {
+            let ip = document.getElementById('espIp').value.trim();
+            let pass = document.getElementById('espPass').value.trim();
+            if(!ip) { alert("Vui lòng nhập IP của ESP32!"); return; }
+
+            fetch(`http://${ip}/${cmd}?pass=${pass}`)
+                .then(response => {
+                    if(response.ok) {
+                        alert("Đã gửi lệnh thành công!");
+                    } else {
+                        alert("Sai mật khẩu hoặc lỗi kết nối!");
+                    }
+                })
+                .catch(err => alert("Không kết nối được với ESP32 qua IP: " + ip));
+        }
+
+        // Cập nhật thông số liên tục từ ESP32 ngầm
+        setInterval(function() {
+            let ip = document.getElementById('espIp').value.trim();
+            let pass = document.getElementById('espPass').value.trim();
+            if(!ip) return;
+
+            fetch(`http://${ip}/data?pass=${pass}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('time').innerText = data.time;
+                    document.getElementById('relay').innerText = data.relay ? 'ĐANG BẬT 💡' : 'ĐANG TẮT 🔌';
+                    document.getElementById('radar_status').innerText = data.enabled ? (data.presence ? '🟢 CÓ NGƯỜI' : '🟢 KHÔNG CÓ NGƯỜI') : '🔴 ĐÃ TẮT';
+                    document.getElementById('mov_dist').innerText = data.mov > 0 ? data.mov + ' cm' : 'Không có';
+                    document.getElementById('stat_dist').innerText = data.stat > 0 ? data.stat + ' cm' : 'Không có';
+                })
+                .catch(err => {
+                    document.getElementById('time').innerText = "Mất kết nối ESP32";
+                });
+        }, 1500);
+    </script>
+</body>
+</html>
