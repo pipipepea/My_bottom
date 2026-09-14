@@ -3,49 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GAMODA // SIMPLE LAN CONTROL</title>
+    <title>GAMODA // FULL LAN CONTROL</title>
     <style>
         body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        .card { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 12px; width: 100%; max-width: 360px; box-sizing: border-box; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .card { background: #1e293b; border: 1px solid #334155; padding: 20px; border-radius: 12px; width: 100%; max-width: 380px; box-sizing: border-box; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         h2, h3 { text-align: center; color: #38bdf8; margin-top: 0; }
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; width: 100%; max-width: 380px; }
+        .tab-btn { flex: 1; background: #334155; border: none; color: #cbd5e1; padding: 10px 5px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+        .tab-btn.active { background: #0284c7; color: #fff; }
+        .tab-content { display: none; width: 100%; max-width: 380px; }
+        .tab-content.active { display: block; }
         .btn { border: none; color: white; padding: 14px; font-size: 15px; margin: 6px 0; cursor: pointer; border-radius: 8px; width: 100%; font-weight: bold; }
-        .btn-on { background: #22c55e; } .btn-off { background: #ef4444; } .btn-pc { background: #3b82f6; }
-        input[type=text], input[type=password] { width: 100%; padding: 10px; margin: 6px 0; background: #0f172a; border: 1px solid #475569; border-radius: 6px; color: #fff; box-sizing: border-box; text-align: center; font-size: 15px; }
+        .btn-on { background: #22c55e; } .btn-off { background: #ef4444; } .btn-pc { background: #3b82f6; } .btn-warn { background: #f97316; } .btn-scan { background: #8b5cf6; }
+        input[type=text], input[type=password], input[type=number], select { width: 100%; padding: 11px; margin: 6px 0; background: #0f172a; border: 1px solid #475569; border-radius: 6px; color: #fff; box-sizing: border-box; text-align: center; font-size: 14px; }
         .box-config { background: #334155; padding: 12px; border-radius: 8px; margin-bottom: 15px; }
-        .status-text { font-size: 16px; margin: 8px 0; }
+        .status-text { font-size: 15px; margin: 8px 0; }
     </style>
 </head>
 <body>
 
     <h2>⚡ GAMODA CONTROL ⚡</h2>
 
-    <!-- Khung cấu hình IP và Mật khẩu LAN -->
-    <div class="card box-config">
+    <!-- Khung cấu hình IP & Mật khẩu chung -->
+    <div class="card box-config" style="width:100%; max-width:380px;">
         <h3>⚙️ KẾT NỐI LAN ESP32</h3>
-        <label>IP ESP32 (Ví dụ: 192.168.1.7):</label>
+        <label style="font-size:0.85rem;">IP ESP32 (Ví dụ: 192.168.1.7):</label>
         <input type="text" id="espIp" placeholder="192.168.1.x" onchange="saveConfig()">
-        <label>Mật khẩu hệ thống (662):</label>
+        <label style="font-size:0.85rem;">Mật khẩu hệ thống (662):</label>
         <input type="password" id="espPass" value="662" onchange="saveConfig()">
     </div>
 
-    <!-- Khung điều khiển chính -->
-    <div class="card">
-        <h3>🖥️ TRẠNG THÁI & ĐIỀU KHIỂN</h3>
-        <div class="status-text">⏰ Thời gian: <b id="time">Đang chờ...</b></div>
-        <div class="status-text">🔌 Rơ-le: <b id="relay">--</b></div>
-        <div class="status-text">📡 Radar: <b id="radar">--</b></div>
-        <div class="status-text">🏃 Di chuyển: <b id="mov">--</b></div>
+    <!-- Thanh chuyển Tab -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('ctrl', this)">🎮 ĐIỀU KHIỂN</button>
+        <button class="tab-btn" onclick="switchTab('radar', this)">📡 RADAR</button>
+        <button class="tab-btn" onclick="switchTab('wifi', this)">🌐 MẠNG</button>
+    </div>
 
-        <hr style="border:0; border-top:1px solid #475569; margin: 15px 0;">
+    <!-- TAB 1: ĐIỀU KHIỂN -->
+    <div class="tab-content active" id="tab-ctrl">
+        <div class="card">
+            <h3>🖥️ TRẠNG THÁI CHÍNH</h3>
+            <div class="status-text">⏰ Thời gian: <b id="time">--:--</b></div>
+            <div class="status-text">🔌 Rơ-le: <b id="relay">--</b></div>
+            <hr style="border:0; border-top:1px solid #475569; margin: 12px 0;">
+            <button class="btn btn-on" onclick="sendCmd('on')">💡 BẬT THIẾT BỊ</button>
+            <button class="btn btn-off" onclick="sendCmd('off')">🔌 TẮT THIẾT BỊ</button>
+            <button class="btn btn-pc" onclick="sendCmd('onpc')">🖥️ BẬT NGUỒN PC</button>
+            <button class="btn btn-warn" onclick="sendCmd('offpc')">⚠️ TẮT CƯỠNG BỨC PC</button>
+        </div>
+    </div>
 
-        <button class="btn btn-on" onclick="sendCmd('on')">💡 BẬT THIẾT BỊ</button>
-        <button class="btn btn-off" onclick="sendCmd('off')">🔌 TẮT THIẾT BỊ</button>
-        <button class="btn btn-pc" onclick="sendCmd('onpc')">🖥️ BẬT NGUỒN PC</button>
-        <button class="btn btn-off" style="background:#f97316;" onclick="sendCmd('offpc')">⚠️ TẮT CƯỠNG BỨC PC</button>
+    <!-- TAB 2: CẢM BIẾN RADAR -->
+    <div class="tab-content" id="tab-radar">
+        <div class="card">
+            <h3>📡 CẢM BIẾN LD2410B</h3>
+            <div class="status-text">🟢 Trạng thái: <b id="radar_status">--</b></div>
+            <div class="status-text">🏃 Di chuyển: <b id="mov">--</b></div>
+            <div class="status-text">🧍 Đứng yên: <b id="stat">--</b></div>
+            <div class="status-text">⚙️ Độ nhạy hiện tại: <b id="sens">--</b> cm</div>
+            
+            <hr style="border:0; border-top:1px solid #475569; margin: 12px 0;">
+            
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-on" style="margin:0; padding:10px;" onclick="sendCmd('radar_on')">BẬT RADAR</button>
+                <button class="btn btn-off" style="margin:0; padding:10px;" onclick="sendCmd('radar_off')">TẮT RADAR</button>
+            </div>
+
+            <label style="font-size:0.85rem; margin-top:10px; display:block;">Độ nhạy mới (50 - 1200 cm):</label>
+            <input type="number" id="radarSensVal" placeholder="Nhập cm">
+            <button class="btn btn-pc" style="background:#0284c7;" onclick="updateSensitivity()">⚙️ CẬP NHẬT ĐỘ NHẠY</button>
+        </div>
+    </div>
+
+    <!-- TAB 3: QUẢN LÝ WI-FI -->
+    <div class="tab-content" id="tab-wifi">
+        <div class="card">
+            <h3>🌐 CẤU HÌNH WI-FI</h3>
+            <button class="btn btn-scan" onclick="scanWiFi()">🔍 QUÉT MẠNG WI-FI</button>
+            
+            <div id="scanResultArea" style="margin: 8px 0;">
+                <label style="font-size:0.85rem;">Tên Wi-Fi (SSID thủ công):</label>
+                <input type="text" id="manualSsid" placeholder="Nhập tên mạng Wi-Fi">
+            </div>
+
+            <label style="font-size:0.85rem;">Mật khẩu Wi-Fi:</label>
+            <input type="password" id="newWifiPass" placeholder="Nhập mật khẩu Wi-Fi">
+            
+            <button class="btn btn-on" onclick="changeWiFi()">🔗 LƯU & KẾT NỐI WI-FI MỚI</button>
+        </div>
     </div>
 
     <script>
-        // Tự động tải lại thông tin đã lưu trước đó
         document.getElementById('espIp').value = localStorage.getItem('esp_ip') || '';
         document.getElementById('espPass').value = localStorage.getItem('esp_pass') || '662';
 
@@ -54,25 +103,64 @@
             localStorage.setItem('esp_pass', document.getElementById('espPass').value.trim());
         }
 
-        function getBaseUrl() {
-            let ip = document.getElementById('espIp').value.trim();
-            return "http://" + ip;
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            btn.classList.add('active');
         }
 
         function sendCmd(cmd) {
             let ip = document.getElementById('espIp').value.trim();
             let pass = document.getElementById('espPass').value.trim();
-            if(!ip) { alert("Vui lòng nhập IP của ESP32!"); return; }
+            if(!ip) { alert("Chưa nhập IP ESP32!"); return; }
 
             fetch(`http://${ip}/${cmd}?pass=${pass}`)
-                .then(res => {
-                    if(res.ok) alert("Đã gửi lệnh thành công!");
-                    else alert("Sai mật khẩu hoặc lỗi lệnh!");
-                })
-                .catch(err => alert("Không kết nối được tới ESP32 qua IP: " + ip));
+                .then(res => res.ok ? alert("Thực thi thành công!") : alert("Lỗi xác thực mật khẩu!"))
+                .catch(err => alert("Không kết nối được tới IP: " + ip));
         }
 
-        // Vòng lặp gọi ngầm lấy thông số JSON từ ESP32 mỗi 2 giây
+        function updateSensitivity() {
+            let ip = document.getElementById('espIp').value.trim();
+            let pass = document.getElementById('espPass').value.trim();
+            let val = document.getElementById('radarSensVal').value;
+            if(!ip || !val) { alert("Thiếu IP hoặc giá trị độ nhạy!"); return; }
+
+            fetch(`http://${ip}/set-sens?pass=${pass}&val=${val}`)
+                .then(res => res.ok ? alert("Đã cập nhật độ nhạy thành công!") : alert("Thất bại!"))
+                .catch(err => alert("Lỗi kết nối!"));
+        }
+
+        function scanWiFi() {
+            let ip = document.getElementById('espIp').value.trim();
+            let pass = document.getElementById('espPass').value.trim();
+            if(!ip) { alert("Chưa nhập IP!"); return; }
+
+            alert("Đang quét mạng Wi-Fi xung quanh, chờ 3 giây...");
+            fetch(`http://${ip}/scan-wifi?pass=${pass}`)
+                .then(res => res.text())
+                .then(htmlOptions => {
+                    document.getElementById('scanResultArea').innerHTML = `<label style="font-size:0.85rem;">Chọn Wi-Fi:</label><select id="selectedSsid">${htmlOptions}</select>`;
+                })
+                .catch(err => alert("Lỗi quét mạng!"));
+        }
+
+        function changeWiFi() {
+            let ip = document.getElementById('espIp').value.trim();
+            let pass = document.getElementById('espPass').value.trim();
+            let ssidSelect = document.getElementById('selectedSsid');
+            let ssid = ssidSelect ? ssidSelect.value : document.getElementById('manualSsid').value;
+            let wpass = document.getElementById('newWifiPass').value;
+
+            if(!ip || !ssid) { alert("Chưa đủ thông tin Wi-Fi!"); return; }
+
+            fetch(`http://${ip}/change-wifi?pass=${pass}&ssid=${encodeURIComponent(ssid)}&wpass=${encodeURIComponent(wpass)}`)
+                .then(res => res.text())
+                .then(msg => alert(msg))
+                .catch(err => alert("Lỗi kết nối!"));
+        }
+
+        // Cập nhật ngầm các thông số từ ESP32 mỗi 2 giây
         setInterval(function() {
             let ip = document.getElementById('espIp').value.trim();
             let pass = document.getElementById('espPass').value.trim();
@@ -83,8 +171,10 @@
                 .then(data => {
                     document.getElementById('time').innerText = data.time;
                     document.getElementById('relay').innerText = data.relay ? "ĐANG BẬT 💡" : "ĐANG TẮT 🔌";
-                    document.getElementById('radar').innerText = data.enabled ? (data.presence ? "🟢 CÓ NGƯỜI" : "🟢 TRỐNG") : "🔴 TẮT";
-                    document.getElementById('mov').innerText = data.mov > 0 ? data.mov + " cm" : "Không có";
+                    document.getElementById('radar_status').innerText = data.enabled ? (data.presence ? "CÓ NGƯỜI" : "TRỐNG") : "TẮT";
+                    document.getElementById('mov').innerText = data.mov > 0 ? data.mov + " cm" : "Không";
+                    document.getElementById('stat').innerText = data.stat > 0 ? data.stat + " cm" : "Không";
+                    document.getElementById('sens').innerText = data.sens;
                 })
                 .catch(err => {
                     document.getElementById('time').innerText = "Mất kết nối LAN";
