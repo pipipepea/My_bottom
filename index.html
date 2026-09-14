@@ -83,7 +83,6 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* Nút điều khiển lớn phong cách Cyber Neon */
         .btn-big {
             border: 2px solid rgba(255, 255, 255, 0.2);
             color: #fff;
@@ -103,7 +102,6 @@
         }
 
         .btn-big:active { transform: scale(0.97); }
-        
         .btn-off-state { background: rgba(203, 45, 62, 0.2); border-color: var(--neon-pink); box-shadow: 0 0 10px rgba(255,0,85,0.2); }
         .btn-on-state { background: rgba(0, 176, 155, 0.3); border-color: var(--neon-green); box-shadow: 0 0 15px rgba(0,255,102,0.4); }
         .btn-pc { background: rgba(33, 147, 176, 0.25); border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0,243,255,0.3); }
@@ -128,7 +126,6 @@
             box-shadow: 0 0 8px rgba(0, 243, 255, 0.4);
         }
 
-        /* Biểu đồ Radar Canvas */
         .radar-container {
             position: relative;
             width: 100%;
@@ -193,7 +190,6 @@
 </head>
 <body>
 
-    <!-- MÀN HÌNH ĐĂNG NHẬP -->
     <div class="card" id="login-screen">
         <h2>⚡ GAMODA ACCESS ⚡</h2>
         <p style="text-align:center; font-size:0.85rem; color:#94a3b8;">Nhập thông tin kết nối vào hệ thống LAN</p>
@@ -208,7 +204,6 @@
         <div class="error-msg" id="errorMsg">❌ Sai mật khẩu hoặc không kết nối được ESP32!</div>
     </div>
 
-    <!-- MÀN HÌNH CHÍNH -->
     <div id="main-app">
         <div class="top-bar">
             <span>🟢 Đã kết nối LAN</span>
@@ -222,7 +217,6 @@
             <button class="tab-btn" onclick="switchTab('wifi', this)">🌐 MẠNG</button>
         </div>
 
-        <!-- TAB 1: ĐIỀU KHIỂN LỚN (NÚT TO, HIỆU ỨNG RÕ) -->
         <div class="tab-content active" id="tab-control">
             <div class="card">
                 <h3>🖥️ TRẠNG THÁI HỆ THỐNG</h3>
@@ -231,7 +225,6 @@
                     <div class="status-item"><span>RƠ-LE CHÍNH</span><b id="relayTxt">--</b></div>
                 </div>
 
-                <!-- Các nút bấm lớn có hiệu ứng đổi màu trạng thái -->
                 <button id="btnRelay" class="btn-big btn-off-state" onclick="toggleRelay()">
                     <span id="relayIcon">🔌</span> <span id="relayLabel">THIẾT BỊ: ĐANG TẮT</span>
                 </button>
@@ -246,12 +239,9 @@
             </div>
         </div>
 
-        <!-- TAB 2: CẢM BIẾN & BIỂU ĐỒ RADAR QUÉT LIÊN TỤC -->
         <div class="tab-content" id="tab-radar">
             <div class="card">
                 <h3>📡 MÔ PHỎNG BIỂU ĐỒ RADAR</h3>
-                
-                <!-- Khu vực hiển thị Biểu đồ quét Radar kiểu App điện thoại -->
                 <div class="radar-container">
                     <canvas id="radarCanvas"></canvas>
                 </div>
@@ -274,7 +264,6 @@
             </div>
         </div>
 
-        <!-- TAB 3: HẸN GIỜ TẮT BẬT THIẾT BỊ -->
         <div class="tab-content" id="tab-timer">
             <div class="card">
                 <h3>⏱️ HẸN GIỜ TỰ ĐỘNG</h3>
@@ -288,7 +277,6 @@
             </div>
         </div>
 
-        <!-- TAB 4: MẠNG WI-FI -->
         <div class="tab-content" id="tab-wifi">
             <div class="card">
                 <h3>🌐 CẤU HÌNH WI-FI KHẨN CẤP</h3>
@@ -312,7 +300,6 @@
         let globalPass = localStorage.getItem('esp_pass') || '';
         let currentRelayState = false;
 
-        // Biến phục vụ vẽ biểu đồ Radar Canvas
         const canvas = document.getElementById('radarCanvas');
         const ctx = canvas.getContext('2d');
         let sweepAngle = 0;
@@ -336,7 +323,8 @@
         function verifyAndEnter(ip, pass, isAuto) {
             fetch(`http://${ip}/data?pass=${pass}`)
                 .then(res => {
-                    if(res.ok) {
+                    // Đã fix chuẩn xác nhận theo Status 200 OK thành công
+                    if(res.status === 200) {
                         globalIp = ip; globalPass = pass;
                         localStorage.setItem('esp_ip', ip); localStorage.setItem('esp_pass', pass);
                         document.getElementById('login-screen').style.display = 'none';
@@ -344,7 +332,7 @@
                         document.getElementById('errorMsg').style.display = 'none';
                         startRadarAnimation();
                     } else {
-                        if(!isAuto) showError("❌ Sai mật khẩu hoặc IP không phản hồi đúng!");
+                        if(!isAuto) showError("❌ Sai mật khẩu hệ thống!");
                         logout();
                     }
                 })
@@ -373,7 +361,6 @@
             btnElement.classList.add('active');
         }
 
-        // Điều khiển nút lớn Bật/Tắt rơ-le
         function toggleRelay() {
             let cmd = currentRelayState ? 'off' : 'on';
             sendCmd(cmd);
@@ -446,7 +433,6 @@
                 .catch(err => alert("Lỗi kết nối!"));
         }
 
-        // Vẽ biểu đồ Radar liên tục mô phỏng app điện thoại
         function startRadarAnimation() {
             canvas.width = canvas.parentElement.clientWidth;
             canvas.height = canvas.parentElement.clientHeight;
@@ -457,7 +443,6 @@
                 let centerY = canvas.height - 15;
                 let radius = Math.min(centerX - 10, canvas.height - 25);
 
-                // Vẽ các vòng tròn định mức khoảng cách radar
                 ctx.strokeStyle = 'rgba(0, 243, 255, 0.15)';
                 ctx.lineWidth = 1;
                 for (let i = 1; i <= 3; i++) {
@@ -466,7 +451,6 @@
                     ctx.stroke();
                 }
 
-                // Vẽ tia quét radar quay tròn
                 ctx.save();
                 ctx.translate(centerX, centerY);
                 ctx.rotate(sweepAngle);
@@ -483,12 +467,9 @@
 
                 sweepAngle += 0.03;
 
-                // Nếu có mục tiêu phát hiện, hiển thị điểm chấm phát sáng trên biểu đồ
                 if (hasTarget) {
-                    let distNorm = Math.min(targetMov / 600, 1); // chuẩn hóa khoảng cách tối đa 600cm
+                    let distNorm = Math.min(targetMov / 600, 1);
                     let targetRadius = radius * (1 - distNorm);
-                    let targetX = centerX - targetRadius * Math.sin(sweepAngle);
-                    let targetY = centerY - targetRadius * Math.cos(sweepAngle);
 
                     ctx.fillStyle = '#ff0055';
                     ctx.shadowBlur = 10;
@@ -504,7 +485,6 @@
             draw();
         }
 
-        // Cập nhật thông số từ ESP32 ngầm định kỳ
         setInterval(function() {
             if(!globalIp || !globalPass) return;
             fetch(`http://${globalIp}/data?pass=${globalPass}`)
